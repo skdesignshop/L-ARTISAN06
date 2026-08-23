@@ -39,8 +39,9 @@ html,body{
   padding:0;
   min-height:100%;
   background:var(--bg);
-  background: radial-gradient(circle at top, #2a2000, #000000); /* Fond dégradé noir jaune */
+  background: radial-gradient(circle at top, #2a2000, #000000);
   background-attachment: fixed;
+  overflow-x: hidden; /* Empêche tout défilement horizontal parasite */
 }
 
 /* ANIMATION REFLET BLANC */
@@ -761,7 +762,7 @@ main{
 }
 
 /* =========================
-   CHECKOUT
+   CHECKOUT (CORRIGÉ POUR MOBILE)
 ========================= */
 
 .overlay{
@@ -782,24 +783,24 @@ main{
 .sheet{
   position:fixed;
   z-index:81;
-  left:0;
-  right:0;
-  bottom:0;
-  max-width:520px;
-  margin:auto;
-  max-height:90vh;
-  overflow:auto;
-  background:var(--bg2);
-  border:1px solid var(--border);
-  border-bottom:0;
-  border-radius:22px 22px 0 0;
-  transform:translateY(100%);
-  transition:.28s;
-  padding-bottom:calc(22px + var(--safe-bottom));
+  left: 50%;
+  width: 100%;
+  max-width: 520px;
+  margin: 0;
+  bottom: 0;
+  max-height: 90vh;
+  overflow: auto;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-bottom: 0;
+  border-radius: 22px 22px 0 0;
+  transform: translateX(-50%) translateY(100%);
+  transition: .28s;
+  padding-bottom: calc(22px + var(--safe-bottom));
 }
 
 .sheet.open{
-  transform:translateY(0);
+  transform: translateX(-50%) translateY(0);
 }
 
 .handle{
@@ -913,7 +914,7 @@ main{
 }
 
 /* =========================
-   PRODUCT MODAL
+   PRODUCT MODAL (CORRIGÉ POUR MOBILE)
 ========================= */
 
 .product-overlay{
@@ -934,24 +935,24 @@ main{
 .product-sheet{
   position:fixed;
   z-index:91;
-  left:0;
-  right:0;
-  bottom:0;
-  max-width:520px;
-  max-height:94vh;
-  margin:auto;
-  overflow:auto;
-  background:var(--bg2);
-  border:1px solid var(--border);
-  border-bottom:0;
-  border-radius:24px 24px 0 0;
-  transform:translateY(100%);
-  transition:.28s;
-  padding-bottom:calc(22px + var(--safe-bottom));
+  left: 50%;
+  width: 100%;
+  max-width: 520px;
+  margin: 0;
+  bottom: 0;
+  max-height: 94vh;
+  overflow: auto;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-bottom: 0;
+  border-radius: 24px 24px 0 0;
+  transform: translateX(-50%) translateY(100%);
+  transition: .28s;
+  padding-bottom: calc(22px + var(--safe-bottom));
 }
 
 .product-sheet.open{
-  transform:translateY(0);
+  transform: translateX(-50%) translateY(0);
 }
 
 .product-detail-image{
@@ -1079,7 +1080,56 @@ main{
     grid-template-columns:1fr;
   }
 
+  }
+/* --- CORRECTIONS DE SÉCURITÉ POUR LE CONTENU DES FICHES PRODUITS --- */
+
+/* S'assure que le corps de la fiche ne dépasse pas */
+.product-sheet, .sheet {
+    width: 100%;
+    max-width: 520px;
+    box-sizing: border-box;
+    overflow-x: hidden;
 }
+
+/* Force le conteneur des options à respecter la largeur */
+.price-options, .delivery-options {
+    width: 100%;
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px; /* Espace entre les options */
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Force chaque bouton d'option à s'adapter parfaitement */
+.price-option, .delivery-option {
+    width: 100% !important;
+    box-sizing: border-box;
+    margin: 0 !important;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    white-space: normal;
+    /* AJUSTEMENTS D'ESPACEMENT POUR ÉVITER LA SUPERPOSITION */
+    padding-top: 13px !important;
+    padding-bottom: 13px !important; /* Augmenté pour l'intérieur du bouton */
+    margin-bottom: 8px !important;   /* Espace entre les boutons */
+}
+
+/* S'assure que le texte à l'intérieur ne casse pas la mise en page */
+.option-name, .option-price {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    line-height: 1.2; /* Assure une bonne hauteur de ligne */
+}
+
+/* Assure un bon espacement sous le bloc d'options avant le bouton "Ajouter" */
+.price-options {
+    margin-bottom: 10px !important;
+}
+
 
 </style>
 </head>
