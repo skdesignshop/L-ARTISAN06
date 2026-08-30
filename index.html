@@ -1503,7 +1503,7 @@ Envoyer sur WhatsApp 🟢
 <div class="handle"></div><button id="closePin" class="close">×</button>
 <div class="sheet-body">
 <h2>Code PIN Admin</h2>
-<p class="sheet-description">Entrez le code PIN sécurisé (par défaut: 1234)</p>
+<p class="sheet-description">Entrez le code PIN sécurisé </p>
 <div class="admin-form-group" style="margin-top:15px;">
 <input type="password" id="adminPinInput" placeholder="PIN à 4 chiffres" maxlength="4">
 </div>
@@ -2211,7 +2211,7 @@ pinOverlay.onclick = () => { pinOverlay.classList.remove("open"); pinSheet.class
 
 document.getElementById("submitPin").onclick = () => {
   const pin = document.getElementById("adminPinInput").value.trim();
-  if(pin === "1234"){
+  if(pin === "2468"){
     pinOverlay.classList.remove("open");
     pinSheet.classList.remove("open");
     document.getElementById("adminPinInput").value = "";
