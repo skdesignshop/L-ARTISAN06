@@ -895,7 +895,6 @@ main{
   max-height:90vh;
   overflow-y:auto;
   overflow-x:hidden;
-  -webkit-overflow-scrolling: touch;
   background: var(--bg2);
   border: 1px solid var(--border);
   border-bottom:0;
@@ -938,18 +937,6 @@ main{
   padding:12px 16px;
   width: 100%;
   overflow-x: hidden;
-}
-
-.sheet-body video {
-  width: 100%;
-  height: auto;
-  max-height: 60vh;
-  pointer-events: auto !important;
-  z-index: 1;
-  border-radius: 14px;
-  display: block;
-  background: #000;
-  margin-bottom: 15px;
 }
 
 .sheet h2{
@@ -1011,373 +998,1200 @@ main{
 }
 .pin-btn.pin-action {
   background: transparent;
-  border: 2px solid var(--primary-yellow);
+  border: none;
+  font-size: 18px;
+  color: var(--muted);
+}
+.pin-btn.pin-action:active {
   color: var(--primary-yellow);
 }
 
-</style>
+.shake {
+  animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+}
+@keyframes shake {
+  10%, 90% { transform: translate3d(-2px, 0, 0); }
+  20%, 80% { transform: translate3d(4px, 0, 0); }
+  30%, 50%, 70% { transform: translate3d(-6px, 0, 0); }
+  40%, 60% { transform: translate3d(6px, 0, 0); }
+}
 
+.delivery-options{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin:16px 0;
+}
+
+.delivery-option{
+  padding:14px 8px;
+  text-align:center;
+  background:var(--card);
+  border: 1px solid #333;
+  border-radius:12px;
+  font-size:11px;
+  font-weight:800;
+  color:var(--text);
+  transition: all 0.2s;
+}
+
+.delivery-option.active{
+  border-color: var(--primary-yellow);
+  background: rgba(255, 215, 0, 0.1);
+  color: var(--primary-yellow);
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+}
+
+.address-wrap{
+  display:none;
+  margin-bottom:12px;
+  animation: slideDown 0.3s ease-out;
+}
+
+.address-wrap.visible{
+  display:block;
+}
+
+.address-wrap label{
+  display:block;
+  color:var(--muted);
+  font-size:10px;
+  font-weight:800;
+  text-transform:uppercase;
+  margin-bottom:5px;
+}
+
+.address-wrap textarea{
+  width:100%;
+  min-height:90px;
+  background:var(--card);
+  color:var(--text);
+  border: 1px solid #333;
+  border-radius:12px;
+  padding:12px;
+  outline:none;
+  font-size:16px;
+  resize:none;
+  transition: all 0.2s;
+}
+
+.address-wrap textarea:focus{
+  border-color: var(--primary-yellow);
+}
+
+.order-summary{
+  background:var(--card);
+  border: 1px solid #333;
+  border-radius:14px;
+  padding:12px;
+  margin-bottom:12px;
+  font-size:11px;
+  line-height:1.6;
+  color:var(--muted);
+}
+
+.order-summary strong{
+  color:var(--text);
+}
+
+.product-overlay{
+  position:fixed;
+  inset:0;
+  z-index:90;
+  background:rgba(0, 0, 0, 0.85);
+  opacity:0;
+  pointer-events:none;
+  transition: opacity .2s ease;
+  backdrop-filter: blur(5px);
+  width: 100vw;
+  height: 100vh;
+}
+
+.product-overlay.open{
+  opacity:1;
+  pointer-events:auto;
+}
+
+.product-sheet{
+  position:fixed;
+  z-index:91;
+  left:0;
+  right:0;
+  bottom:0;
+  width: 100%;
+  max-width:520px;
+  max-height:94vh;
+  margin:auto;
+  overflow-y:auto;
+  overflow-x:hidden;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-bottom:0;
+  border-radius:24px 24px 0 0;
+  transform:translateY(100%);
+  transition: transform .28s ease-out;
+  padding-bottom:calc(22px + var(--safe-bottom));
+  box-shadow: 0 -10px 40px rgba(0,0,0,0.6);
+}
+
+.product-sheet.open{
+  transform:translateY(0);
+}
+
+.product-detail-media{
+  width:100%;
+  aspect-ratio:1/1;
+  object-fit:cover;
+  display:block;
+  border-radius:20px 20px 0 0;
+}
+
+.product-detail-body{
+  padding:15px;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+.detail-badge{
+  display:inline-block;
+  padding:6px 10px;
+  border-radius:20px;
+  background: rgba(255, 215, 0, 0.1);
+  color: var(--primary-yellow);
+  border: 1px solid var(--dark-yellow);
+  font-size:9px;
+  font-weight:900;
+  text-transform:uppercase;
+}
+
+.detail-title{
+  font-family:'Archivo Black',sans-serif;
+  font-size:23px;
+  margin:10px 0 7px;
+  color: #fff;
+}
+
+.detail-description{
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.6;
+  margin-bottom:16px;
+}
+
+.options-title{
+  color:var(--text);
+  font-size:12px;
+  font-weight:900;
+  margin-bottom:8px;
+}
+
+.price-options{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  margin-bottom:13px;
+}
+
+.price-option{
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:13px;
+  border-radius:12px;
+  border: 1px solid #333;
+  background:var(--card);
+  color:var(--text);
+  text-align:left;
+  transition: all 0.2s;
+}
+
+.price-option.active{
+  border-color: var(--primary-yellow);
+  background: rgba(255, 215, 0, 0.1);
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
+}
+
+.option-name{
+  font-size:11px;
+  font-weight:800;
+}
+
+.option-price{
+  color: var(--primary-yellow);
+  font-size:12px;
+  font-weight:900;
+}
+
+/* Styles Admin Panel */
+.admin-form-group{margin-bottom:12px;}
+.admin-form-group label{display:block;color:var(--muted);font-size:11px;font-weight:800;margin-bottom:4px;text-transform:uppercase;}
+.admin-form-group input, .admin-form-group textarea, .admin-form-group select{width:100%;background:var(--card);border:1px solid #333;border-radius:10px;padding:10px;color:var(--text);font-size:16px;outline:none;}
+.admin-form-group input:focus, .admin-form-group textarea:focus{border-color:var(--primary-yellow);}
+.admin-product-row{display:flex;align-items:center;justify-content:space-between;background:var(--card);border:1px solid #333;padding:10px;border-radius:10px;margin-bottom:8px;}
+.admin-product-info{display:flex;align-items:center;gap:10px;min-width:0;flex:1;}
+.admin-product-thumb{width:40px;height:40px;border-radius:8px;object-fit:cover;background:#000;flex-shrink:0;}
+.admin-actions{display:flex;gap:6px;flex-shrink:0;}
+.admin-btn{padding:6px 10px;border-radius:8px;font-size:11px;font-weight:800;}
+.admin-btn.edit{background:var(--dark-yellow);color:#fff;}
+.admin-btn.delete{background:var(--danger);color:#fff;}
+
+.toast{
+  position:fixed;
+  z-index:100;
+  left:50%;
+  bottom:100px;
+  transform:translate(-50%,20px);
+  background: var(--primary-yellow);
+  color:#000;
+  padding:11px 18px;
+  border-radius:30px;
+  font-size:12px;
+  font-weight:900;
+  opacity:0;
+  pointer-events:none;
+  transition: transform 0.25s ease-out, opacity 0.25s ease-out;
+  white-space:nowrap;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+}
+
+.toast.show{
+  opacity:1;
+  transform:translate(-50%,0);
+}
+
+@media(max-width:360px){
+  .grid{
+    grid-template-columns:1fr;
+  }
+}
+
+</style>
 </head>
+
 <body>
 
 <div class="app">
-  <div class="top">
-    <img src="" alt="" class="logo" id="logoImg">
-    <div class="search">
-      <span class="search-icon">🔍</span>
-      <input type="text" id="searchInput" placeholder="Rechercher...">
-      <button class="clear-search" id="clearSearch">✕</button>
-    </div>
-    
-    <button class="category-button" id="categoryButton">
-      <span class="left">
-        <span>📂 Catégories</span>
-      </span>
-      <span class="arrow">▼</span>
-    </button>
-    <div class="categories" id="categories"></div>
-  </div>
 
-  <main>
-    <div id="homeView" class="view active">
-      <div id="productsContainer"></div>
-    </div>
-    <div id="cartView" class="view">
-      <div class="page-title">🛒 Mon Panier</div>
-      <div id="cartItems"></div>
-      <div id="cartSummary"></div>
-      <div class="order-actions" id="orderActions"></div>
-    </div>
-    <div id="profileView" class="view">
-      <div class="page-title">👤 Profil</div>
-      <div id="profileContent"></div>
-    </div>
-  </main>
+<!-- PAGE BOUTIQUE -->
+<section id="view-shop" class="view active">
+<header class="top">
+<img class="logo" src="https://raw.githubusercontent.com/skdesignshop/photo-image-/refs/heads/main/IMG_9326.jpeg" alt="Logo L'artisan06">
+<div class="search">
+<svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+<input id="search" type="text" placeholder="Rechercher un produit...">
+<button id="clearSearch" class="clear-search">×</button>
+</div>
+<button id="categoryButton" class="category-button">
+<span class="left"><span>☰</span><span id="categoryText">Toutes les catégories</span></span>
+<span class="arrow">⌄</span>
+</button>
+<div id="categories" class="categories"></div>
+</header>
+<main>
+<div id="sectionTitle" class="section-title">Tous les produits</div>
+<div id="products" class="grid"></div>
+<div id="empty" class="empty" style="display:none"><div class="empty-icon">📦</div>Aucun produit ne correspond à ta recherche.</div>
+</main>
+</section>
 
-  <div class="bottom-nav">
-    <button class="nav-btn active" data-view="homeView">
-      <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-      Accueil
-    </button>
-    <button class="nav-btn" data-view="cartView">
-      <svg viewBox="0 0 24 24"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1.003 1.003 0 0020 4H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg>
-      Panier
-      <span class="badge" id="cartBadge">0</span>
-    </button>
-    <button class="nav-btn" data-view="profileView">
-      <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
-      Profil
-    </button>
-  </div>
+<!-- PAGE PANIER -->
+<section id="view-cart" class="view">
+<main>
+<div class="page-title">Panier</div>
+<div id="cartList"></div>
+<div id="cartEmpty" class="empty"><div class="empty-icon">🛒</div>Ton panier est vide.</div>
+<div id="summary" class="summary" style="display:none">
+<div class="summary-row"><span>Sous-total</span><span id="subtotal">0,00 €</span></div>
+<div class="summary-row"><span>Livraison</span><span>À définir</span></div>
+<div class="summary-row total"><span>Total</span><span id="total">0,00 €</span></div>
+<button id="checkoutOpen" class="submit">Commander</button>
+</div>
+</main>
+</section>
+
+<!-- PAGE INFORMATIONS -->
+<section id="view-info" class="view">
+<main>
+<div class="page-title">Informations</div>
+<div class="info-card"><h3>Bienvenue</h3><p>Bienvenue dans notre boutique. Retrouvez ici nos meilleurs produits et réseaux.</p></div>
+<div class="info-card"><h3>Meet-up / Livraison</h3><p>Choisis ton mode de réception au moment de la commande.</p></div>
+<div class="info-card">
+<h3>Nos réseaux</h3>
+<div class="socials">
+<a class="social" href="https://t.me/+MFHN9W_pqmNlODg8" target="_blank" rel="noopener"><span class="social-icon"><img src="https://raw.githubusercontent.com/skdesignshop/photo-image-/refs/heads/main/IMG_8963.webp" alt="Telegram"></span><span>Telegram</span></a>
+<a class="social" href="https://tato.im/lartisan06000" target="_blank" rel="noopener"><span class="social-icon"><img src="https://raw.githubusercontent.com/skdesignshop/photo-image-/refs/heads/main/IMG_9332.png" alt="Tato"></span><span>Tato talk</span></a>
+<a class="social" href="https://linktr.ee/Lartisan.nicois" target="_blank" rel="noopener"><span class="social-icon"><img src="https://raw.githubusercontent.com/skdesignshop/photo-image-/refs/heads/main/IMG_9333.png" alt="Linktree"></span><span>Linktree</span></a>
+</div>
+</div>
+</main>
+</section>
+
+<!-- PAGE PROFIL -->
+<section id="view-profile" class="view">
+<main>
+<div class="profile">
+<div class="avatar"><img id="userAvatar" src="https://raw.githubusercontent.com/skdesignshop/photo-image-/refs/heads/main/IMG_9326.jpeg" alt="Profil"></div>
+<div id="profileName" class="profile-name">Client</div>
+<div class="profile-sub">Telegram WebApp</div>
+</div>
+<div class="profile-row"><span>👤 Nom Telegram</span><span id="profileUsername">—</span></div>
+<div class="profile-row"><span>🆔 Identifiant</span><span id="profileId">—</span></div>
+<div class="profile-row"><span>🛒 Articles ajoutés</span><span id="profileCartCount">0</span></div>
+<div class="profile-row"><span>🟢 Statut</span><span>Actif</span></div>
+
+<!-- Bouton Admin Visible sur la page Profil -->
+<button id="adminDirectBtn" class="admin-access-btn">
+  ⚡ Espace Administrateur
+</button>
+
+<div class="profile-developer">
+  <a class="profile-developer-badge" href="https://t.me/catalogueledesigner" target="_blank" rel="noopener">
+    <span>MINI APPLICATION CRÉÉ PAR LE DESIGNER</span><span class="profile-verified">✓</span>
+  </a>
+</div>
+</main>
+</section>
+
+<!-- NAVIGATION INFÉRIEURE -->
+<nav class="bottom-nav">
+<button class="nav-btn active" data-view="shop"><svg viewBox="0 0 24 24"><path d="M3 10l9-7 9 7"></path><path d="M5 9v11h14V9"></path></svg>Boutique</button>
+<button class="nav-btn" data-view="cart"><svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"></path></svg>Panier<span id="cartBadge" class="badge">0</span></button>
+<button class="nav-btn" data-view="info"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><line x1="12" y1="10" x2="12" y2="16"></line><circle cx="12" cy="7" r="1"></circle></svg>Infos</button>
+<button class="nav-btn" data-view="profile"><svg viewBox="0 0 24 24"><circle cx="12" cy="7" r="4"></circle><path d="M4 21v-1a8 8 0 0 1 16 0v1"></path></svg>Profil</button>
+</nav>
+
 </div>
 
-<div class="overlay" id="overlay"></div>
-<div class="sheet" id="sheet">
-  <div class="handle"></div>
-  <button class="close" id="closeSheet">✕</button>
-  <div class="sheet-body" id="sheetBody"></div>
+<!-- MODALS -->
+<div id="productOverlay" class="product-overlay"></div>
+<div id="productSheet" class="product-sheet">
+<div class="handle"></div><button id="closeProduct" class="close">×</button>
+<div id="detailMediaContainer"></div>
+<div class="product-detail-body">
+<div id="detailBadge" class="detail-badge">Catégorie</div>
+<div id="detailTitle" class="detail-title">Produit</div>
+<div id="detailDescription" class="detail-description">Description</div>
+<div class="options-title">Choisis ton option</div>
+<div id="priceOptions" class="price-options"></div>
+<button id="detailAdd" class="submit">Ajouter au panier</button>
+</div>
 </div>
 
+<div id="checkoutOverlay" class="overlay"></div>
+<div id="checkoutSheet" class="sheet">
+<div class="handle"></div><button id="closeCheckout" class="close">×</button>
+<div class="sheet-body">
+<h2>Finaliser la commande</h2>
+<p class="sheet-description">Choisis ton mode de réception et ta plateforme d'envoi.</p>
+<div class="delivery-options">
+<button class="delivery-option active" data-delivery="meetup">🏢 Meet-up</button>
+<button class="delivery-option" data-delivery="delivery">🚚 Livraison</button>
+</div>
+<div id="addressWrap" class="address-wrap">
+<label>Adresse de livraison</label>
+<textarea id="customerAddress" placeholder="Indique ton adresse complète..."></textarea>
+</div>
+<div id="orderSummary" class="order-summary"></div>
+<div class="order-actions">
+<button id="submitOrderTg" class="submit telegram">Envoyer sur Telegram ✈️</button>
+<button id="submitOrderWa" class="submit whatsapp">Envoyer sur WhatsApp 🟢</button>
+</div>
+</div>
+</div>
+
+<!-- MODAL PIN ADMIN SECURE -->
+<div id="pinOverlay" class="overlay"></div>
+<div id="pinSheet" class="sheet">
+<div class="handle"></div><button id="closePin" class="close">×</button>
+<div class="sheet-body">
+<h2 style="text-align:center;">Accès Sécurisé</h2>
+<p class="sheet-description" style="text-align:center;">Veuillez saisir votre code</p>
+<div id="pinDisplay" class="pin-display">
+  <span class="pin-dot"></span><span class="pin-dot"></span><span class="pin-dot"></span><span class="pin-dot"></span>
+</div>
+<div class="pin-pad">
+  <button class="pin-btn" data-val="1">1</button>
+  <button class="pin-btn" data-val="2">2</button>
+  <button class="pin-btn" data-val="3">3</button>
+  <button class="pin-btn" data-val="4">4</button>
+  <button class="pin-btn" data-val="5">5</button>
+  <button class="pin-btn" data-val="6">6</button>
+  <button class="pin-btn" data-val="7">7</button>
+  <button class="pin-btn" data-val="8">8</button>
+  <button class="pin-btn" data-val="9">9</button>
+  <button class="pin-btn pin-action" id="pinClear">C</button>
+  <button class="pin-btn" data-val="0">0</button>
+  <button class="pin-btn pin-action" id="pinDel">⌫</button>
+</div>
+</div>
+</div>
+
+<!-- MODAL ESPACE ADMIN -->
+<div id="adminOverlay" class="overlay"></div>
+<div id="adminSheet" class="sheet" style="max-height:95vh;">
+<div class="handle"></div><button id="closeAdmin" class="close">×</button>
+<div class="sheet-body">
+<h2>Espace Administrateur</h2>
+<p class="sheet-description">Gérez vos produits, prix et médias.</p>
+<div style="margin-top:15px; display:flex; gap:10px;">
+<button id="adminTabAddBtn" class="submit" style="margin-top:0; background:var(--card2); color:var(--primary-yellow); border:1px solid var(--primary-yellow);">➕ Nouveau Produit</button>
+<button id="adminTabListBtn" class="submit" style="margin-top:0; background:var(--card2); color:#fff; border:1px solid #444;">📦 Liste Produits</button>
+</div>
+<div id="adminSectionForm" style="margin-top:15px;">
+<h3 id="adminFormTitle" style="color:var(--primary-yellow); font-size:15px; margin-bottom:10px;">Ajouter un produit</h3>
+<input type="hidden" id="editProductId">
+<div class="admin-form-group"><label>Nom du Produit</label><input type="text" id="adminName" placeholder="Ex: AMNESIA HYPRO"></div>
+<div class="admin-form-group"><label>Catégorie</label><input type="text" id="adminCategory" placeholder="Ex: PRODUIT🇺🇸"></div>
+<div class="admin-form-group"><label>Description</label><textarea id="adminDesc" placeholder="Description..."></textarea></div>
+<div class="admin-form-group">
+<label>Lien direct (Prioritaire - Image/Vidéo externe)</label>
+<input type="text" id="adminMediaLink" placeholder="https://lien-de-ta-video-ou-image.mp4">
+</div>
+<div class="admin-form-group" style="text-align: center; color: var(--muted); font-size: 10px;">- OU -</div>
+<div class="admin-form-group">
+<label>Upload depuis la Galerie (S'enregistre dans Firebase)</label>
+<input type="file" id="adminMediaFile" accept="image/*,video/mp4,video/quicktime">
+</div>
+<div class="admin-form-group"><label>Options & Prix (Format: Option:Prix séparés par une virgule)</label><input type="text" id="adminOptions" placeholder="5g:50, 25g:200" value="5g:50, 25g:200"></div>
+<button id="saveProductBtn" class="submit">Enregistrer</button>
+</div>
+<div id="adminSectionList" style="margin-top:15px; display:none;">
+<h3 style="color:var(--primary-yellow); font-size:15px; margin-bottom:10px;">Modifier / Supprimer</h3>
+<div id="adminProductsContainer"></div>
+</div>
+</div>
+</div>
+
+<div id="toast" class="toast">Ajouté ✓</div>
+
+<!-- JAVASCRIPT DE CONFIGURATION ET LOGIQUE -->
 <script>
-// Gestion sécurisée des vidéos pour Telegram WebApp
-function loadProductVideo(videoUrl) {
-  const sheetBody = document.getElementById('sheetBody');
-  if (sheetBody) {
-    const existingVideos = sheetBody.querySelectorAll('video');
-    existingVideos.forEach(v => v.remove());
-    
-    const video = document.createElement('video');
-    video.src = videoUrl;
-    video.controls = true;
-    video.preload = 'metadata';
-    video.style.cssText = `
-      width: 100%;
-      height: auto;
-      max-height: 60vh;
-      border-radius: 14px;
-      margin-bottom: 15px;
-      pointer-events: auto;
-    `;
-    
-    video.addEventListener('play', () => {
-      if (window.Telegram?.WebApp) {
-        window.Telegram.WebApp.HapticFeedback?.impactOccurred?.('light');
-      }
-    });
-    
-    sheetBody.insertBefore(video, sheetBody.firstChild);
-  }
-}
+(function(){
+"use strict";
 
-// Initialisation Firebase et chargement des données
 const firebaseConfig = {
-  apiKey: "AIzaSyDO_S3s6VQpn5QcGKkJYtOlmLiMuVQ3tss",
-  authDomain: "l-artisan06.firebaseapp.com",
-  projectId: "l-artisan06",
-  storageBucket: "l-artisan06.appspot.com",
-  messagingSenderId: "271869876890",
-  appId: "1:271869876890:web:5b81cc0c62e10b3d65c57e"
+  apiKey: "AIzaSyAN27ky5gBLEW38h-rGq-iOzz01lRLcdBQ",
+  authDomain: "lartisan06-f7f3d.firebaseapp.com",
+  projectId: "lartisan06-f7f3d",
+  storageBucket: "lartisan06-f7f3d.firebasestorage.app",
+  messagingSenderId: "737303829664",
+  appId: "1:737303829664:web:fb9dfa9c3583a3eb993dc5",
+  measurementId: "G-2NV5V6XN0S"
 };
 
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-
-let cart = [];
-let products = [];
-let categories = [];
-let currentView = 'homeView';
-
-// Charger les données
-async function loadData() {
-  try {
-    const productsSnap = await db.collection('products').get();
-    products = productsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    
-    const categoriesSnap = await db.collection('categories').get();
-    categories = categoriesSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    
-    renderProducts();
-    renderCategories();
-  } catch (error) {
-    console.error('Erreur:', error);
+let db = null;
+let storage = null;
+try {
+  if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
   }
+  db = firebase.firestore();
+  storage = firebase.storage();
+} catch(e) {
+  console.warn("Erreur d'initialisation Firebase:", e);
 }
 
-function renderProducts() {
-  const container = document.getElementById('productsContainer');
-  container.innerHTML = '<div class="section-title">✨ COLLECTION</div>';
+const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
+if(tg){
+  tg.ready();
+  tg.expand();
+  if(tg.setHeaderColor) tg.setHeaderColor("#000000");
+  if(tg.setBackgroundColor) tg.setBackgroundColor("#000000");
+}
+
+let PRODUCTS = [];
+
+const state = {
+  category: "Tous",
+  search: "",
+  cart: {},
+  delivery: "meetup",
+  selectedProduct: null,
+  selectedOption: 0
+};
+
+function euro(value){
+  return Number(value).toLocaleString("fr-FR",{minimumFractionDigits:2,maximumFractionDigits:2})+" €";
+}
+function showToast(message){
+  const el = document.getElementById("toast");
+  el.textContent = message;
+  el.classList.add("show");
+  setTimeout(()=>el.classList.remove("show"), 1800);
+}
+
+function loadProductsFromFirebase(){
+  if(!db) { renderCategories(); renderProducts(); return; }
   
-  const grid = document.createElement('div');
-  grid.className = 'grid';
+  db.collection("products").onSnapshot((snapshot) => {
+    if(!snapshot.empty) {
+      PRODUCTS = [];
+      snapshot.forEach((doc) => {
+        PRODUCTS.push({ id: doc.id, ...doc.data() });
+      });
+    }
+    renderCategories();
+    renderProducts();
+    if(document.getElementById("adminSheet").classList.contains("open")) renderAdminProductList();
+  });
+}
+
+function saveProductToFirebase(productData, productId){
+  if(!db) {
+    if(productId){
+      const idx = PRODUCTS.findIndex(p => p.id === productId);
+      if(idx !== -1) PRODUCTS[idx] = { id: productId, ...productData };
+    } else {
+      productData.id = "prod-" + Date.now();
+      PRODUCTS.push(productData);
+    }
+    renderCategories();
+    renderProducts();
+    showToast("Enregistré localement ✓");
+    return Promise.resolve();
+  }
+
+  let docRef = productId ? db.collection("products").doc(productId) : db.collection("products").doc();
   
-  products.forEach(product => {
-    const card = document.createElement('div');
-    card.className = 'product-card';
+  return docRef.set(productData, { merge: true }).then(()=>{
+    showToast(productId ? "Modifié dans Firestore ✓" : "Ajouté dans Firestore ✓");
+  }).catch(err => {
+    console.error("Erreur Firestore:", err);
+    showToast("Erreur d'enregistrement ❌");
+  });
+}
+
+function deleteProductFromFirebase(productId){
+  if(!db){
+    PRODUCTS = PRODUCTS.filter(p => p.id !== productId);
+    renderCategories();
+    renderProducts();
+    renderAdminProductList();
+    showToast("Supprimé ✓");
+    return;
+  }
+  
+  db.collection("products").doc(productId).delete().then(()=>{
+    showToast("Supprimé avec succès ✓");
+    renderAdminProductList();
+  }).catch(err => {
+    console.error("Erreur suppression:", err);
+  });
+}
+
+function renderCategories(){
+  const categoriesEl = document.getElementById("categories");
+  const categoryButton = document.getElementById("categoryButton");
+  const categoryText = document.getElementById("categoryText");
+  const CATEGORIES = ["Tous", ...new Set(PRODUCTS.map(p=>p.category))];
+
+  categoriesEl.innerHTML = "";
+  CATEGORIES.forEach(cat=>{
+    const btn = document.createElement("button");
+    btn.className = "category" + (cat === state.category ? " active" : "");
+    btn.textContent = cat;
+
+    btn.onclick = ()=>{
+      state.category = cat;
+      document.querySelectorAll(".category").forEach(x=>x.classList.remove("active"));
+      btn.classList.add("active");
+      categoryText.textContent = cat === "Tous" ? "Toutes les catégories" : cat;
+      categoriesEl.classList.remove("open");
+      categoryButton.classList.remove("open");
+      renderProducts();
+    };
+    categoriesEl.appendChild(btn);
+  });
+
+  categoryButton.onclick = ()=>{
+    categoriesEl.classList.toggle("open");
+    categoryButton.classList.toggle("open");
+  };
+}
+
+const searchInput = document.getElementById("search");
+const clearSearch = document.getElementById("clearSearch");
+
+searchInput.addEventListener("input", ()=>{
+  state.search = searchInput.value.trim().toLowerCase();
+  clearSearch.style.display = state.search ? "flex" : "none";
+  renderProducts();
+});
+clearSearch.onclick = ()=>{
+  searchInput.value = "";
+  state.search = "";
+  clearSearch.style.display = "none";
+  renderProducts();
+};
+
+function renderProducts(){
+  const container = document.getElementById("products");
+  const emptyMsg = document.getElementById("empty");
+  container.innerHTML = "";
+
+  const filtered = PRODUCTS.filter(p=>{
+    const catMatch = state.category === "Tous" || p.category === state.category;
+    const text = (p.name + " " + p.category + " " + p.description).toLowerCase();
+    const searchMatch = !state.search || text.includes(state.search);
+    return catMatch && searchMatch;
+  });
+
+  emptyMsg.style.display = filtered.length ? "none" : "block";
+
+  filtered.forEach(p=>{
+    const firstPrice = p.options && p.options.length > 0 ? p.options[0].price : 0;
+    const imgUrl = p.image || "https://raw.githubusercontent.com/skdesignshop/photo-image-/refs/heads/main/IMG_9326.jpeg";
+    const isVideo = imgUrl.toLowerCase().endsWith('.mp4') || imgUrl.toLowerCase().includes('.mov') || imgUrl.includes('alt=media&token=') && imgUrl.includes('%2Fvideo');
+
+    const mediaHTML = isVideo 
+      ? `<video class="product-image" src="${imgUrl}" autoplay loop muted playsinline></video>`
+      : `<img class="product-image" src="${imgUrl}" alt="${p.name}" loading="lazy">`;
+
+    const card = document.createElement("div");
+    card.className = "product-card";
+    
     card.innerHTML = `
       <div class="product-image-wrap">
-        <img src="${product.image}" alt="${product.name}" class="product-image">
-        <span class="product-badge">${product.badge || 'NEW'}</span>
+        ${mediaHTML}
+        <div class="product-badge">${p.category}</div>
       </div>
       <div class="product-content">
-        <h3 class="product-name">${product.name}</h3>
-        <p class="product-description">${product.description}</p>
+        <div class="product-name">${p.name}</div>
+        <div class="product-description">${p.description}</div>
         <div class="product-bottom">
-          <span class="product-price">${product.price}€</span>
-          <button class="add-button" data-id="${product.id}" data-name="${product.name}" data-price="${product.price}" data-image="${product.image}" data-video="${product.video || ''}">+</button>
+          <div class="product-price">Dès ${euro(firstPrice)}</div>
+          <button class="add-button" aria-label="Ajouter ${p.name}">+</button>
         </div>
       </div>
     `;
-    
-    card.addEventListener('click', () => showProductDetail(product));
-    grid.appendChild(card);
-  });
-  
-  container.appendChild(grid);
-  
-  document.querySelectorAll('.add-button').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      addToCart(e.target);
-    });
+
+    card.onclick = (e)=>{
+      if(e.target.closest(".add-button")){
+        if(p.options && p.options.length > 0) addToCart(p, p.options[0]);
+        return;
+      }
+      openProduct(p);
+    };
+
+    container.appendChild(card);
   });
 }
 
-function showProductDetail(product) {
-  const sheetBody = document.getElementById('sheetBody');
-  sheetBody.innerHTML = '';
+const prodOverlay = document.getElementById("productOverlay");
+const prodSheet = document.getElementById("productSheet");
+
+function openProduct(p){
+  state.selectedProduct = p;
+  state.selectedOption = 0;
+
+  const imgUrl = p.image || "https://raw.githubusercontent.com/skdesignshop/photo-image-/refs/heads/main/IMG_9326.jpeg";
+  const isVideo = imgUrl.toLowerCase().endsWith('.mp4') || imgUrl.toLowerCase().includes('.mov') || imgUrl.includes('alt=media&token=') && imgUrl.includes('%2Fvideo');
+  const mediaContainer = document.getElementById("detailMediaContainer");
   
-  if (product.video) {
-    loadProductVideo(product.video);
+  if(isVideo){
+    mediaContainer.innerHTML = `<video class="product-detail-media" src="${imgUrl}" autoplay loop muted playsinline controls></video>`;
+  } else {
+    mediaContainer.innerHTML = `<img id="detailImage" class="product-detail-media" src="${imgUrl}" alt="Produit">`;
   }
-  
-  const content = document.createElement('div');
-  content.innerHTML = `
-    <h2>${product.name}</h2>
-    <p class="sheet-description">${product.description}</p>
-    <div class="info-card">
-      <h3>Prix: ${product.price}€</h3>
-      <p>${product.details || ''}</p>
-    </div>
-    <button class="submit" onclick="addToCartFromDetail('${product.id}', '${product.name}', ${product.price}, '${product.image}')">
-      Ajouter au panier
-    </button>
-  `;
-  sheetBody.appendChild(content);
-  
-  document.getElementById('sheet').classList.add('open');
-  document.getElementById('overlay').classList.add('open');
+
+  document.getElementById("detailTitle").textContent = p.name;
+  document.getElementById("detailBadge").textContent = p.category;
+  document.getElementById("detailDescription").textContent = p.description;
+
+  renderPriceOptions();
+
+  prodOverlay.classList.add("open");
+  prodSheet.classList.add("open");
 }
 
-function addToCart(btn) {
-  const item = {
-    id: btn.dataset.id,
-    name: btn.dataset.name,
-    price: parseFloat(btn.dataset.price),
-    image: btn.dataset.image,
-    quantity: 1
-  };
-  
-  const existing = cart.find(p => p.id === item.id);
-  if (existing) existing.quantity++;
-  else cart.push(item);
-  
-  updateCartBadge();
-  showNotification('✓ Ajouté au panier');
-}
+function renderPriceOptions(){
+  const p = state.selectedProduct;
+  const container = document.getElementById("priceOptions");
+  container.innerHTML = "";
+  if(!p.options) return;
 
-function addToCartFromDetail(id, name, price, image) {
-  const item = { id, name, price, image, quantity: 1 };
-  const existing = cart.find(p => p.id === id);
-  if (existing) existing.quantity++;
-  else cart.push(item);
-  
-  updateCartBadge();
-  closeSheet();
-}
+  p.options.forEach((opt, idx)=>{
+    const btn = document.createElement("button");
+    btn.className = "price-option" + (idx === state.selectedOption ? " active" : "");
+    
+    btn.innerHTML = `
+      <span class="option-name">${opt.name}</span>
+      <span class="option-price">${euro(opt.price)}</span>
+    `;
 
-function updateCartBadge() {
-  const badge = document.getElementById('cartBadge');
-  const count = cart.reduce((sum, item) => sum + item.quantity, 0);
-  badge.textContent = count;
-  badge.style.display = count > 0 ? 'flex' : 'none';
-}
+    btn.onclick = ()=>{
+      state.selectedOption = idx;
+      renderPriceOptions();
+    };
 
-function renderCategories() {
-  const container = document.getElementById('categories');
-  container.innerHTML = '';
-  categories.forEach(cat => {
-    const btn = document.createElement('button');
-    btn.className = 'category';
-    btn.textContent = cat.name;
-    btn.addEventListener('click', () => filterByCategory(cat.id));
     container.appendChild(btn);
   });
 }
 
-function filterByCategory(catId) {
-  // Implémenter le filtrage
+function closeProduct(){
+  prodOverlay.classList.remove("open");
+  prodSheet.classList.remove("open");
 }
 
-function showNotification(msg) {
-  const notif = document.createElement('div');
-  notif.textContent = msg;
-  notif.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#FFD700;color:#000;padding:10px 20px;border-radius:8px;z-index:999;font-weight:900;';
-  document.body.appendChild(notif);
-  setTimeout(() => notif.remove(), 2000);
+document.getElementById("closeProduct").onclick = closeProduct;
+prodOverlay.onclick = closeProduct;
+
+document.getElementById("detailAdd").onclick = ()=>{
+  const p = state.selectedProduct;
+  const opt = p.options[state.selectedOption];
+  addToCart(p, opt);
+  closeProduct();
+};
+
+function addToCart(product, option){
+  const key = product.id + "::" + option.name;
+
+  if(state.cart[key]){
+    state.cart[key].quantity++;
+  } else {
+    state.cart[key] = {
+      key: key,
+      id: product.id,
+      name: product.name,
+      option: option.name,
+      price: option.price,
+      image: product.image,
+      quantity: 1
+    };
+  }
+  updateCartUI();
+  showToast(product.name + " ajouté ✓");
 }
 
-function closeSheet() {
-  document.getElementById('sheet').classList.remove('open');
-  document.getElementById('overlay').classList.remove('open');
-}
-
-// Navigation
-document.querySelectorAll('.nav-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const view = btn.dataset.view;
-    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-    document.getElementById(view).classList.add('active');
-    
-    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    
-    if (view === 'cartView') renderCart();
-    else if (view === 'profileView') renderProfile();
-  });
-});
-
-function renderCart() {
-  const container = document.getElementById('cartItems');
-  const summary = document.getElementById('cartSummary');
+function updateCartUI(){
+  const list = document.getElementById("cartList");
+  const empty = document.getElementById("cartEmpty");
+  const summary = document.getElementById("summary");
+  const badge = document.getElementById("cartBadge");
+  const profileCount = document.getElementById("profileCartCount");
   
-  if (cart.length === 0) {
-    container.innerHTML = '<div class="empty"><div class="empty-icon">🛒</div>Panier vide</div>';
-    summary.innerHTML = '';
+  list.innerHTML = "";
+  const items = Object.values(state.cart);
+
+  if(items.length === 0){
+    empty.style.display = "block";
+    summary.style.display = "none";
+    badge.style.display = "none";
+    profileCount.textContent = "0";
     return;
   }
-  
-  container.innerHTML = cart.map(item => `
-    <div class="cart-item">
-      <div class="cart-thumb"><img src="${item.image}" alt="${item.name}"></div>
+
+  empty.style.display = "none";
+  summary.style.display = "block";
+
+  let total = 0;
+  let count = 0;
+
+  items.forEach(item=>{
+    total += item.price * item.quantity;
+    count += item.quantity;
+    
+    const imgUrl = item.image || "https://raw.githubusercontent.com/skdesignshop/photo-image-/refs/heads/main/IMG_9326.jpeg";
+    const isVideo = imgUrl.toLowerCase().endsWith('.mp4') || imgUrl.toLowerCase().includes('.mov') || imgUrl.includes('alt=media&token=') && imgUrl.includes('%2Fvideo');
+    
+    const thumbHTML = isVideo 
+      ? `<video src="${imgUrl}" autoplay loop muted playsinline></video>` 
+      : `<img src="${imgUrl}" alt="${item.name}">`;
+
+    const el = document.createElement("div");
+    el.className = "cart-item";
+    el.innerHTML = `
+      <div class="cart-thumb">${thumbHTML}</div>
       <div class="cart-info">
         <h4>${item.name}</h4>
-        <span class="cart-meta">${item.price}€</span>
+        <div class="cart-meta">${item.option} — ${euro(item.price)}/u</div>
       </div>
       <div class="cart-right">
-        <div class="cart-price">${(item.price * item.quantity).toFixed(2)}€</div>
+        <div class="cart-price">${euro(item.price * item.quantity)}</div>
         <div class="qty">
-          <button onclick="updateQty('${item.id}', -1)">−</button>
+          <button data-action="minus">−</button>
           <span>${item.quantity}</span>
-          <button onclick="updateQty('${item.id}', 1)">+</button>
+          <button data-action="plus">+</button>
         </div>
       </div>
-    </div>
-  `).join('');
+    `;
+
+    el.addEventListener("click", (e)=>{
+      const action = e.target.dataset.action;
+      if(!action) return;
+      if(action === "plus") item.quantity++;
+      if(action === "minus") item.quantity--;
+      
+      if(item.quantity <= 0) delete state.cart[item.key];
+      updateCartUI();
+    });
+
+    list.appendChild(el);
+  });
+
+  document.getElementById("subtotal").textContent = euro(total);
+  document.getElementById("total").textContent = euro(total);
+
+  badge.textContent = count;
+  badge.style.display = count > 0 ? "flex" : "none";
+  profileCount.textContent = count;
   
-  const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-  summary.innerHTML = `
-    <div class="summary">
-      <div class="summary-row"><span>Sous-total</span><span>${total.toFixed(2)}€</span></div>
-      <div class="summary-row total"><span>Total</span><span>${total.toFixed(2)}€</span></div>
-      <div class="order-actions">
-        <button class="submit whatsapp" onclick="orderVia('whatsapp', ${total})">💬 WhatsApp</button>
-        <button class="submit telegram" onclick="orderVia('telegram', ${total})">✈️ Telegram</button>
-      </div>
-    </div>
-  `;
+  updateOrderSummaryText();
 }
 
-function updateQty(id, change) {
-  const item = cart.find(p => p.id === id);
-  if (item) {
-    item.quantity += change;
-    if (item.quantity <= 0) cart = cart.filter(p => p.id !== id);
-    updateCartBadge();
-    renderCart();
-  }
+const checkOverlay = document.getElementById("checkoutOverlay");
+const checkSheet = document.getElementById("checkoutSheet");
+const addressWrap = document.getElementById("addressWrap");
+
+document.getElementById("checkoutOpen").onclick = ()=>{
+  if(Object.keys(state.cart).length === 0) return;
+  updateOrderSummaryText();
+  checkOverlay.classList.add("open");
+  checkSheet.classList.add("open");
+};
+
+function closeCheckout(){
+  checkOverlay.classList.remove("open");
+  checkSheet.classList.remove("open");
 }
 
-function orderVia(platform, total) {
-  const items = cart.map(i => `${i.name} (x${i.quantity})`).join(', ');
-  const msg = `Commande L'ARTISAN 06: ${items} | Total: ${total.toFixed(2)}€`;
-  
-  if (platform === 'whatsapp') {
-    window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`);
-  } else {
-    window.open(`https://t.me/share/url?text=${encodeURIComponent(msg)}`);
-  }
-}
+document.getElementById("closeCheckout").onclick = closeCheckout;
+checkOverlay.onclick = closeCheckout;
 
-function renderProfile() {
-  const container = document.getElementById('profileContent');
-  container.innerHTML = `
-    <div class="profile">
-      <div class="avatar"><img src="https://via.placeholder.com/82" alt="Profile"></div>
-      <div class="profile-name">L'ARTISAN 06</div>
-      <div class="profile-sub">Boutique Officielle</div>
-    </div>
-    <div class="info-card">
-      <h3>À propos</h3>
-      <p>Bienvenue dans notre boutique en ligne. Nous proposons les meilleurs produits artisanaux.</p>
-    </div>
-    <div class="socials" id="socials"></div>
-    <div class="profile-developer">
-      <a href="#" class="profile-developer-badge">🔗 Plus d'infos</a>
-    </div>
-  `;
-}
-
-// Fermer le sheet
-document.getElementById('closeSheet').addEventListener('click', closeSheet);
-document.getElementById('overlay').addEventListener('click', closeSheet);
-
-document.getElementById('categoryButton').addEventListener('click', () => {
-  document.getElementById('categories').classList.toggle('open');
-  document.getElementById('categoryButton').classList.toggle('open');
+document.querySelectorAll(".delivery-option").forEach(btn=>{
+  btn.onclick = ()=>{
+    document.querySelectorAll(".delivery-option").forEach(x=>x.classList.remove("active"));
+    btn.classList.add("active");
+    state.delivery = btn.dataset.delivery;
+    addressWrap.classList.toggle("visible", state.delivery === "delivery");
+    updateOrderSummaryText();
+  };
 });
 
-// Charger au démarrage
-loadData();
+function updateOrderSummaryText(){
+  const items = Object.values(state.cart);
+  let text = "<strong>Récapitulatif :</strong><br>";
+  let total = 0;
+  
+  items.forEach(item=>{
+    text += `• ${item.quantity}× ${item.name} (${item.option}) — ${euro(item.price * item.quantity)}<br>`;
+    total += item.price * item.quantity;
+  });
+  
+  text += `<br><strong>Total : ${euro(total)}</strong><br>`;
+  text += `Réception : ${state.delivery === "delivery" ? "🚚 Livraison" : "🏢 Meet-up"}`;
+  
+  document.getElementById("orderSummary").innerHTML = text;
+}
+
+function buildOrderMessage(){
+  const userTg = tg && tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user : null;
+  const items = Object.values(state.cart);
+  const firstName = userTg ? userTg.first_name : "Client";
+  const lastName = userTg && userTg.last_name ? " " + userTg.last_name : "";
+  
+  let msg = `🛒 NOUVELLE COMMANDE\n\n`;
+  msg += `👤 Client : ${firstName}${lastName}\n`;
+  if(userTg && userTg.username) msg += `🆔 Telegram : @${userTg.username}\n`;
+  
+  msg += `\n📦 Articles :\n`;
+  let total = 0;
+  items.forEach(item=>{
+    msg += `• ${item.quantity}× ${item.name} — ${item.option} (${euro(item.price * item.quantity)})\n`;
+    total += item.price * item.quantity;
+  });
+  
+  msg += `\n💰 TOTAL : ${euro(total)}\n`;
+  msg += `\n📍 Mode : ${state.delivery === "delivery" ? "Livraison🚚" : "Meet-up🏢"}\n`;
+  
+  if(state.delivery === "delivery"){
+    const addr = document.getElementById("customerAddress").value.trim();
+    msg += `🏠 Adresse : ${addr || "Non indiquée"}\n`;
+  }
+  
+  return msg;
+}
+
+document.getElementById("submitOrderTg").onclick = ()=>{
+  if(Object.keys(state.cart).length === 0) return;
+  if(state.delivery === "delivery"){
+    const addr = document.getElementById("customerAddress").value.trim();
+    if(!addr){
+      showToast("Indique ton adresse ⚠️");
+      addressWrap.querySelector("textarea").focus();
+      return;
+    }
+  }
+
+  const encodedMsg = encodeURIComponent(buildOrderMessage());
+  const link = `https://t.me/lartisan06?text=${encodedMsg}`;
+
+  closeCheckout();
+  if(tg){
+    tg.openTelegramLink(link);
+  } else {
+    window.open(link, "_blank");
+  }
+  showToast("Commande Telegram préparée ✓");
+};
+
+document.getElementById("submitOrderWa").onclick = ()=>{
+  if(Object.keys(state.cart).length === 0) return;
+  if(state.delivery === "delivery"){
+    const addr = document.getElementById("customerAddress").value.trim();
+    if(!addr){
+      showToast("Indique ton adresse ⚠️");
+      addressWrap.querySelector("textarea").focus();
+      return;
+    }
+  }
+
+  const encodedMsg = encodeURIComponent(buildOrderMessage());
+  const phoneNumber = "33628007778";
+  const link = `https://wa.me/${phoneNumber}?text=${encodedMsg}`;
+
+  closeCheckout();
+  window.open(link, "_blank");
+  showToast("Commande WhatsApp préparée ✓");
+};
+
+document.querySelectorAll(".nav-btn").forEach(btn=>{
+  btn.onclick = ()=>{
+    const target = btn.dataset.view;
+    if(!target) return;
+
+    document.querySelectorAll(".nav-btn").forEach(x=>x.classList.remove("active"));
+    btn.classList.add("active");
+
+    document.querySelectorAll(".view").forEach(x=>x.classList.remove("active"));
+    document.getElementById("view-" + target).classList.add("active");
+    
+    window.scrollTo(0,0);
+  };
+});
+
+// LOGIQUE CLAVIER PIN
+const pinOverlay = document.getElementById("pinOverlay");
+const pinSheet = document.getElementById("pinSheet");
+const adminOverlay = document.getElementById("adminOverlay");
+const adminSheet = document.getElementById("adminSheet");
+const pinDots = document.querySelectorAll(".pin-dot");
+let currentPin = "";
+const VALID_PIN = "2468"; // CHANGE TON CODE ICI
+
+document.getElementById("adminDirectBtn").onclick = () => {
+  currentPin = "";
+  updatePinDisplay();
+  pinOverlay.classList.add("open");
+  pinSheet.classList.add("open");
+};
+
+function updatePinDisplay() {
+  pinDots.forEach((dot, index) => {
+    if(index < currentPin.length) dot.classList.add("filled");
+    else dot.classList.remove("filled");
+  });
+}
+
+function checkPin() {
+  if (currentPin === VALID_PIN) {
+    pinOverlay.classList.remove("open");
+    pinSheet.classList.remove("open");
+    adminOverlay.classList.add("open");
+    adminSheet.classList.add("open");
+    renderAdminProductList();
+    showToast("Accès admin autorisé ✓");
+  } else {
+    document.getElementById("pinDisplay").classList.add("shake");
+    setTimeout(() => {
+      document.getElementById("pinDisplay").classList.remove("shake");
+      currentPin = "";
+      updatePinDisplay();
+    }, 400);
+  }
+}
+
+document.querySelectorAll(".pin-btn").forEach(btn => {
+  btn.onclick = () => {
+    if(btn.id === "pinClear") {
+      currentPin = "";
+      updatePinDisplay();
+    } else if(btn.id === "pinDel") {
+      currentPin = currentPin.slice(0, -1);
+      updatePinDisplay();
+    } else if(btn.dataset.val && currentPin.length < 4) {
+      currentPin += btn.dataset.val;
+      updatePinDisplay();
+      if(currentPin.length === 4) {
+        setTimeout(checkPin, 100);
+      }
+    }
+  }
+});
+
+document.getElementById("closePin").onclick = () => { pinOverlay.classList.remove("open"); pinSheet.classList.remove("open"); };
+pinOverlay.onclick = () => { pinOverlay.classList.remove("open"); pinSheet.classList.remove("open"); };
+document.getElementById("closeAdmin").onclick = () => { adminOverlay.classList.remove("open"); adminSheet.classList.remove("open"); };
+adminOverlay.onclick = () => { adminOverlay.classList.remove("open"); adminSheet.classList.remove("open"); };
+
+document.getElementById("adminTabAddBtn").onclick = () => {
+  document.getElementById("adminSectionForm").style.display = "block";
+  document.getElementById("adminSectionList").style.display = "none";
+  resetAdminForm();
+};
+document.getElementById("adminTabListBtn").onclick = () => {
+  document.getElementById("adminSectionForm").style.display = "none";
+  document.getElementById("adminSectionList").style.display = "block";
+  renderAdminProductList();
+};
+
+function resetAdminForm(){
+  document.getElementById("editProductId").value = "";
+  document.getElementById("adminName").value = "";
+  document.getElementById("adminCategory").value = "";
+  document.getElementById("adminDesc").value = "";
+  document.getElementById("adminMediaLink").value = "";
+  document.getElementById("adminMediaFile").value = "";
+  document.getElementById("adminOptions").value = "5g:50, 25g:200";
+  document.getElementById("adminFormTitle").textContent = "Ajouter un produit";
+  document.getElementById("saveProductBtn").textContent = "Enregistrer";
+}
+
+function renderAdminProductList(){
+  const container = document.getElementById("adminProductsContainer");
+  container.innerHTML = "";
+  
+  PRODUCTS.forEach(p => {
+    const imgUrl = p.image || "https://raw.githubusercontent.com/skdesignshop/photo-image-/refs/heads/main/IMG_9326.jpeg";
+    const isVideo = imgUrl.toLowerCase().endsWith('.mp4') || imgUrl.toLowerCase().includes('.mov') || imgUrl.includes('alt=media&token=') && imgUrl.includes('%2Fvideo');
+
+    const row = document.createElement("div");
+    row.className = "admin-product-row";
+    row.innerHTML = `
+      <div class="admin-product-info">
+        ${isVideo ? `<video class="admin-product-thumb" src="${imgUrl}" muted></video>` : `<img class="admin-product-thumb" src="${imgUrl}">`}
+        <div style="min-width:0; overflow:hidden;">
+          <div style="font-size:12px; font-weight:800; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${p.name}</div>
+          <div style="font-size:10px; color:var(--muted);">${p.category}</div>
+        </div>
+      </div>
+      <div class="admin-actions">
+        <button class="admin-btn edit" data-id="${p.id}">Modifier</button>
+        <button class="admin-btn delete" data-id="${p.id}">Supprimer</button>
+      </div>
+    `;
+    
+    row.querySelector(".edit").onclick = () => {
+      document.getElementById("editProductId").value = p.id;
+      document.getElementById("adminName").value = p.name;
+      document.getElementById("adminCategory").value = p.category;
+      document.getElementById("adminDesc").value = p.description;
+      document.getElementById("adminMediaLink").value = p.image || "";
+      document.getElementById("adminFormTitle").textContent = "Modifier le produit";
+      document.getElementById("adminSectionForm").style.display = "block";
+      document.getElementById("adminSectionList").style.display = "none";
+    };
+
+    row.querySelector(".delete").onclick = () => {
+      if(confirm("Es-tu sûr de vouloir supprimer ce produit ?")) {
+        deleteProductFromFirebase(p.id);
+      }
+    };
+
+    container.appendChild(row);
+  });
+}
+
+document.getElementById("saveProductBtn").onclick = async () => {
+  const btn = document.getElementById("saveProductBtn");
+  const id = document.getElementById("editProductId").value;
+  const name = document.getElementById("adminName").value.trim();
+  const category = document.getElementById("adminCategory").value.trim();
+  const description = document.getElementById("adminDesc").value.trim();
+  const optionsRaw = document.getElementById("adminOptions").value.trim();
+  
+  const mediaLinkInput = document.getElementById("adminMediaLink").value.trim();
+  const fileInput = document.getElementById("adminMediaFile");
+
+  if(!name || !category){
+    showToast("Nom et catégorie obligatoires ⚠️");
+    return;
+  }
+
+  const options = optionsRaw.split(",").map(part => {
+    const [optName, optPrice] = part.split(":");
+    return { name: (optName||"").trim(), price: Number((optPrice||"0").trim()) };
+  }).filter(o => o.name && !isNaN(o.price));
+
+  if(options.length === 0){
+    showToast("Format des options invalide ⚠️");
+    return;
+  }
+
+  let finalImageUrl = "";
+  const existing = id ? PRODUCTS.find(p => p.id === id) : null;
+  if(existing) finalImageUrl = existing.image;
+
+  // Si un lien direct est fourni, il est prioritaire
+  if(mediaLinkInput !== "") {
+    finalImageUrl = mediaLinkInput;
+  } 
+  // Sinon, s'il y a un fichier envoyé depuis la galerie
+  else if(fileInput.files && fileInput.files[0]) {
+    const file = fileInput.files[0];
+    
+    if(storage) {
+      btn.textContent = "Upload en cours... ⏳";
+      btn.disabled = true;
+      try {
+        const fileRef = storage.ref('products/' + Date.now() + '_' + file.name);
+        await fileRef.put(file);
+        finalImageUrl = await fileRef.getDownloadURL();
+      } catch (err) {
+        showToast("Erreur lors de l'upload du média ❌");
+        btn.textContent = "Enregistrer";
+        btn.disabled = false;
+        return;
+      }
+    } else {
+      showToast("Erreur : Storage Firebase non configuré.");
+      return;
+    }
+  }
+
+  // Enregistrement Firestore
+  const productData = { 
+    name, 
+    category, 
+    description, 
+    image: finalImageUrl || "https://raw.githubusercontent.com/skdesignshop/photo-image-/refs/heads/main/IMG_9326.jpeg", 
+    options 
+  };
+  
+  await saveProductToFirebase(productData, id ? id : null);
+  btn.textContent = "Enregistrer";
+  btn.disabled = false;
+  document.getElementById("adminSectionForm").style.display = "none";
+  document.getElementById("adminSectionList").style.display = "block";
+  renderAdminProductList();
+};
+
+const userTg = tg && tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user : null;
+if(userTg){
+  document.getElementById("profileName").textContent = userTg.first_name + (userTg.last_name ? " " + userTg.last_name : "");
+  document.getElementById("profileUsername").textContent = userTg.username ? "@"+userTg.username : "Non défini";
+  document.getElementById("profileId").textContent = userTg.id || "Inconnu";
+  
+  // Si l'API renvoie une photo (souvent le cas pour les utilisateurs premium ou selon la vie privée)
+  if(userTg.photo_url) {
+    document.getElementById("userAvatar").src = userTg.photo_url;
+  }
+}
+
+loadProductsFromFirebase();
+
+})();
 </script>
 
 </body>
