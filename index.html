@@ -543,6 +543,31 @@ main{
   font-weight: 900;
 }
 
+.admin-access-btn {
+  margin-top: 15px;
+  width: 100%;
+  padding: 12px;
+  border-radius: 13px;
+  background: rgba(255, 215, 0, 0.1);
+  border: 1px solid var(--border);
+  color: var(--primary-yellow);
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.1);
+  transition: all 0.2s;
+}
+
+.admin-access-btn:active {
+  background: rgba(255, 215, 0, 0.25);
+  transform: scale(0.98);
+}
+
 .view{
   display:none;
 }
@@ -784,7 +809,6 @@ main{
   border: 2px solid var(--primary-yellow);
   overflow:hidden;
   box-shadow: 0 0 25px rgba(255, 215, 0, 0.5);
-  cursor: pointer;
 }
 
 .avatar img{
@@ -1223,7 +1247,7 @@ main{
 <section id="view-profile" class="view">
 <main>
 <div class="profile">
-<div class="avatar" id="profileAvatarTrigger"><img src="https://raw.githubusercontent.com/skdesignshop/photo-image-/refs/heads/main/IMG_9326.jpeg" alt="Profil"></div>
+<div class="avatar"><img src="https://raw.githubusercontent.com/skdesignshop/photo-image-/refs/heads/main/IMG_9326.jpeg" alt="Profil"></div>
 <div id="profileName" class="profile-name">Client</div>
 <div class="profile-sub">Telegram WebApp</div>
 </div>
@@ -1231,6 +1255,12 @@ main{
 <div class="profile-row"><span>🆔 Identifiant</span><span id="profileId">—</span></div>
 <div class="profile-row"><span>🛒 Articles ajoutés</span><span id="profileCartCount">0</span></div>
 <div class="profile-row"><span>🟢 Statut</span><span>Actif</span></div>
+
+<!-- Bouton Admin Visible sur la page Profil -->
+<button id="adminDirectBtn" class="admin-access-btn">
+  ⚡ Espace Administrateur
+</button>
+
 <div class="profile-developer">
   <a class="profile-developer-badge" href="https://t.me/catalogueledesigner" target="_blank" rel="noopener">
     <span>MINI APPLICATION CRÉÉ PAR LE DESIGNER</span><span class="profile-verified">✓</span>
@@ -1475,21 +1505,14 @@ function saveProductToFirebase(productData, productId){
     return Promise.resolve();
   }
 
-  if(productId) {
-    return db.collection("products").doc(productId).set(productData, { merge: true }).then(()=>{
-      showToast("Modifié dans Firestore ✓");
-    }).catch(err => {
-      console.error("Erreur Firestore:", err);
-      showToast("Erreur d'enregistrement ❌");
-    });
-  } else {
-    return db.collection("products").add(productData).then(()=>{
-      showToast("Ajouté dans Firestore ✓");
-    }).catch(err => {
-      console.error("Erreur Firestore:", err);
-      showToast("Erreur d'ajout ❌");
-    });
-  }
+  let docRef = productId ? db.collection("products").doc(productId) : db.collection("products").doc();
+  
+  return docRef.set(productData, { merge: true }).then(()=>{
+    showToast(productId ? "Modifié dans Firestore ✓" : "Ajouté dans Firestore ✓");
+  }).catch(err => {
+    console.error("Erreur Firestore:", err);
+    showToast("Erreur d'enregistrement ❌");
+  });
 }
 
 function deleteProductFromFirebase(productId){
@@ -1902,27 +1925,18 @@ const pinSheet = document.getElementById("pinSheet");
 const adminOverlay = document.getElementById("adminOverlay");
 const adminSheet = document.getElementById("adminSheet");
 
-let tapCount = 0;
-let tapTimer = null;
-
-document.getElementById("profileAvatarTrigger").addEventListener("click", () => {
-  tapCount++;
-  clearTimeout(tapTimer);
-  tapTimer = setTimeout(() => { tapCount = 0; }, 500);
-
-  if(tapCount >= 5) {
-    tapCount = 0;
-    pinOverlay.classList.add("open");
-    pinSheet.classList.add("open");
-  }
-});
+// Déclencheur direct via le bouton sur la page Profil
+document.getElementById("adminDirectBtn").onclick = () => {
+  pinOverlay.classList.add("open");
+  pinSheet.classList.add("open");
+};
 
 document.getElementById("closePin").onclick = () => { pinOverlay.classList.remove("open"); pinSheet.classList.remove("open"); };
 pinOverlay.onclick = () => { pinOverlay.classList.remove("open"); pinSheet.classList.remove("open"); };
 
 document.getElementById("submitPin").onclick = () => {
   const pin = document.getElementById("adminPinInput").value.trim();
-  if(pin === "2468"){
+  if(pin === "1234"){
     pinOverlay.classList.remove("open");
     pinSheet.classList.remove("open");
     document.getElementById("adminPinInput").value = "";
