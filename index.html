@@ -808,7 +808,6 @@ main{
   border-radius:50%;
   border: 2px solid var(--primary-yellow);
   overflow:hidden;
-  box-shadow: 0 0 25px rgba(255, 215, 0, 0.5);
 }
 
 .avatar img{
@@ -1316,13 +1315,13 @@ main{
 </div>
 </div>
 
-<!-- MODAL PIN ADMIN -->
+<!-- MODAL PIN ADMIN (Code PIN: 2468) -->
 <div id="pinOverlay" class="overlay"></div>
 <div id="pinSheet" class="sheet">
 <div class="handle"></div><button id="closePin" class="close">×</button>
 <div class="sheet-body">
 <h2>Code PIN Admin</h2>
-<p class="sheet-description">Entrez le code PIN sécurisé (par défaut: 1234)</p>
+<p class="sheet-description">Entrez le code PIN sécurisé (par défaut: 2468)</p>
 <div class="admin-form-group" style="margin-top:15px;">
 <input type="password" id="adminPinInput" placeholder="PIN à 4 chiffres" maxlength="4">
 </div>
@@ -1925,7 +1924,6 @@ const pinSheet = document.getElementById("pinSheet");
 const adminOverlay = document.getElementById("adminOverlay");
 const adminSheet = document.getElementById("adminSheet");
 
-// Déclencheur direct via le bouton sur la page Profil
 document.getElementById("adminDirectBtn").onclick = () => {
   pinOverlay.classList.add("open");
   pinSheet.classList.add("open");
@@ -1936,7 +1934,8 @@ pinOverlay.onclick = () => { pinOverlay.classList.remove("open"); pinSheet.class
 
 document.getElementById("submitPin").onclick = () => {
   const pin = document.getElementById("adminPinInput").value.trim();
-  if(pin === "1234"){
+  // Code PIN mis à jour sur 2468
+  if(pin === "2468"){
     pinOverlay.classList.remove("open");
     pinSheet.classList.remove("open");
     document.getElementById("adminPinInput").value = "";
