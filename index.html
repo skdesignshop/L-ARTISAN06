@@ -9,9 +9,10 @@
 <!-- Intégration de la librairie Telegram WebApp -->
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
-<!-- Firebase SDKs (Compat v10) -->
+<!-- Firebase SDKs (Compat v10) - Ajout de Storage pour les médias -->
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics-compat.js"></script>
 
 <!-- Polices d'écriture -->
@@ -543,13 +544,19 @@ main{
   font-weight: 900;
 }
 
+/* Bouton Admin Designifié */
+@keyframes borderGlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
 .admin-access-btn {
   margin-top: 15px;
   width: 100%;
   padding: 12px;
   border-radius: 13px;
-  background: rgba(255, 215, 0, 0.1);
-  border: 1px solid var(--border);
+  background: #111;
   color: var(--primary-yellow);
   font-size: 12px;
   font-weight: 800;
@@ -559,12 +566,23 @@ main{
   align-items: center;
   justify-content: center;
   gap: 8px;
-  box-shadow: 0 0 10px rgba(255, 215, 0, 0.1);
+  position: relative;
+  z-index: 1;
   transition: all 0.2s;
 }
 
+.admin-access-btn::before {
+  content: '';
+  position: absolute;
+  top: -2px; left: -2px; right: -2px; bottom: -2px;
+  background: linear-gradient(45deg, var(--primary-yellow), #000, var(--dark-yellow), #000);
+  background-size: 300% 300%;
+  z-index: -1;
+  border-radius: 15px;
+  animation: borderGlow 4s ease infinite;
+}
+
 .admin-access-btn:active {
-  background: rgba(255, 215, 0, 0.25);
   transform: scale(0.98);
 }
 
@@ -710,6 +728,9 @@ main{
   font-weight:900;
   box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
   transition: all 0.2s;
+  display:flex;
+  align-items:center;
+  justify-content:center;
 }
 
 .submit:active {
@@ -929,6 +950,70 @@ main{
   color:var(--muted);
   font-size:12.5px;
   line-height:1.55;
+}
+
+/* Clavier PIN */
+.pin-display {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin: 20px 0;
+}
+.pin-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  background: transparent;
+  transition: 0.2s;
+}
+.pin-dot.filled {
+  background: var(--primary-yellow);
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+.pin-pad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+  max-width: 280px;
+  margin: 0 auto 20px auto;
+}
+.pin-btn {
+  width: 100%;
+  aspect-ratio: 1/1;
+  background: var(--card);
+  border: 1px solid #333;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 24px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+.pin-btn:active {
+  background: var(--dark-yellow);
+  transform: scale(0.9);
+}
+.pin-btn.pin-action {
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  color: var(--muted);
+}
+.pin-btn.pin-action:active {
+  color: var(--primary-yellow);
+}
+
+.shake {
+  animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+}
+@keyframes shake {
+  10%, 90% { transform: translate3d(-2px, 0, 0); }
+  20%, 80% { transform: translate3d(4px, 0, 0); }
+  30%, 50%, 70% { transform: translate3d(-6px, 0, 0); }
+  40%, 60% { transform: translate3d(6px, 0, 0); }
 }
 
 .delivery-options{
@@ -1246,7 +1331,7 @@ main{
 <section id="view-profile" class="view">
 <main>
 <div class="profile">
-<div class="avatar"><img src="https://raw.githubusercontent.com/skdesignshop/photo-image-/refs/heads/main/IMG_9326.jpeg" alt="Profil"></div>
+<div class="avatar"><img id="userAvatar" src="https://raw.githubusercontent.com/skdesignshop/photo-image-/refs/heads/main/IMG_9326.jpeg" alt="Profil"></div>
 <div id="profileName" class="profile-name">Client</div>
 <div class="profile-sub">Telegram WebApp</div>
 </div>
@@ -1315,17 +1400,30 @@ main{
 </div>
 </div>
 
-<!-- MODAL PIN ADMIN (Code PIN: 2468) -->
+<!-- MODAL PIN ADMIN SECURE -->
 <div id="pinOverlay" class="overlay"></div>
 <div id="pinSheet" class="sheet">
 <div class="handle"></div><button id="closePin" class="close">×</button>
 <div class="sheet-body">
-<h2>Code PIN Admin</h2>
-<p class="sheet-description">Entrez le code PIN sécurisé (par défaut: 2468)</p>
-<div class="admin-form-group" style="margin-top:15px;">
-<input type="password" id="adminPinInput" placeholder="PIN à 4 chiffres" maxlength="4">
+<h2 style="text-align:center;">Accès Sécurisé</h2>
+<p class="sheet-description" style="text-align:center;">Veuillez saisir votre code</p>
+<div id="pinDisplay" class="pin-display">
+  <span class="pin-dot"></span><span class="pin-dot"></span><span class="pin-dot"></span><span class="pin-dot"></span>
 </div>
-<button id="submitPin" class="submit">Valider</button>
+<div class="pin-pad">
+  <button class="pin-btn" data-val="1">1</button>
+  <button class="pin-btn" data-val="2">2</button>
+  <button class="pin-btn" data-val="3">3</button>
+  <button class="pin-btn" data-val="4">4</button>
+  <button class="pin-btn" data-val="5">5</button>
+  <button class="pin-btn" data-val="6">6</button>
+  <button class="pin-btn" data-val="7">7</button>
+  <button class="pin-btn" data-val="8">8</button>
+  <button class="pin-btn" data-val="9">9</button>
+  <button class="pin-btn pin-action" id="pinClear">C</button>
+  <button class="pin-btn" data-val="0">0</button>
+  <button class="pin-btn pin-action" id="pinDel">⌫</button>
+</div>
 </div>
 </div>
 
@@ -1347,11 +1445,16 @@ main{
 <div class="admin-form-group"><label>Catégorie</label><input type="text" id="adminCategory" placeholder="Ex: PRODUIT🇺🇸"></div>
 <div class="admin-form-group"><label>Description</label><textarea id="adminDesc" placeholder="Description..."></textarea></div>
 <div class="admin-form-group">
-<label>Sélectionner une photo ou vidéo courte (&lt; 1 Mo)</label>
+<label>Lien direct (Prioritaire - Image/Vidéo externe)</label>
+<input type="text" id="adminMediaLink" placeholder="https://lien-de-ta-video-ou-image.mp4">
+</div>
+<div class="admin-form-group" style="text-align: center; color: var(--muted); font-size: 10px;">- OU -</div>
+<div class="admin-form-group">
+<label>Upload depuis la Galerie (S'enregistre dans Firebase)</label>
 <input type="file" id="adminMediaFile" accept="image/*,video/mp4,video/quicktime">
 </div>
 <div class="admin-form-group"><label>Options & Prix (Format: Option:Prix séparés par une virgule)</label><input type="text" id="adminOptions" placeholder="5g:50, 25g:200" value="5g:50, 25g:200"></div>
-<button id="saveProductBtn" class="submit">Enregistrer dans Firestore</button>
+<button id="saveProductBtn" class="submit">Enregistrer</button>
 </div>
 <div id="adminSectionList" style="margin-top:15px; display:none;">
 <h3 style="color:var(--primary-yellow); font-size:15px; margin-bottom:10px;">Modifier / Supprimer</h3>
@@ -1378,11 +1481,13 @@ const firebaseConfig = {
 };
 
 let db = null;
+let storage = null;
 try {
   if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
   }
   db = firebase.firestore();
+  storage = firebase.storage();
 } catch(e) {
   console.warn("Erreur d'initialisation Firebase:", e);
 }
@@ -1395,64 +1500,7 @@ if(tg){
   if(tg.setBackgroundColor) tg.setBackgroundColor("#000000");
 }
 
-let PRODUCTS = [
-  {
-    id:"produit-1",
-    name:"JAUNE MOUSSEUX🧽",
-    category:"MOUSS🧽",
-    description:"HONEY🍯.",
-    image:"https://raw.githubusercontent.com/skdesignshop/photo-image-/refs/heads/main/IMG_9316.jpeg",
-    options:[{name:"11g",price:50},{name:"25g",price:110},{name:"50g",price:170},{name:"100g",price:300}]
-  },
-  {
-    id:"produit-2",
-    name:"FILTRE 120u🇲🇦",
-    category:"PRODUIT🇲🇦",
-    description:"BANANA🍌.",
-    image:"https://raw.githubusercontent.com/skdesignshop/photo-image-/refs/heads/main/IMG_9319.jpeg",
-    options:[{name:"7g",price:50},{name:"25g",price:160},{name:"50g",price:260},{name:"100g",price:450}]
-  },
-  {
-    id:"produit-3",
-    name:"FRESH FROZEN🥶",
-    category:"EXCLU LIMITÉ🚨",
-    description:"CRYSTAL FARMS🧊.",
-    image:"https://raw.githubusercontent.com/skdesignshop/photo-image-/refs/heads/main/IMG_9320.jpeg",
-    options:[{name:"5g",price:100},{name:"25g",price:300},{name:"50g",price:500},{name:"100g",price:900}]
-  },
-  {
-    id:"produit-4",
-    name:"PAVÉ COLOMBIEN🇨🇴",
-    category:"ZIP❄️",
-    description:"MASH🇨🇴.",
-    image:"https://raw.githubusercontent.com/skdesignshop/photo-image-/refs/heads/main/IMG_9322.jpeg",
-    options:[{name:"1g",price:60},{name:"5g",price:220},{name:"10g",price:400}]
-  },
-  {
-    id:"produit-5",
-    name:"AMNESIA HYPRO🌿",
-    category:"PRODUIT🇺🇸",
-    description:"AMNESIA HYPRO STANDARD🌿.",
-    image:"https://raw.githubusercontent.com/skdesignshop/photo-image-/refs/heads/main/IMG_9324.jpeg",
-    options:[{name:"7g",price:50},{name:"25g",price:160},{name:"50g",price:260},{name:"100g",price:450}]
-  },
-  {
-    id: "produit-6",
-    name: "CALI US🇺🇸",
-    category: "PRODUIT🇺🇸",
-    description: "BOLO RUNTZ🇺🇸.",
-    image: "https://raw.githubusercontent.com/skdesignshop/photo-image-/refs/heads/main/IMG_9330.jpeg",
-    options: [{ name: "5g", price: 50 }, { name: "25g", price: 220 }, { name: "50g", price: 400 }, { name: "100g", price: 750 }]
-  },
-  {
-    id: "produit-7",
-    name: "OLIVE SURINAMIENNE🫒🇸🇷",
-    category: "ZIP❄️",
-    description: "OLIVE SURINAMIENNE🫒🇸🇷.",
-    image: "https://raw.githubusercontent.com/skdesignshop/photo-image-/refs/heads/main/IMG_9329.jpeg",
-    options: [{ name: "1g", price: 60 }, { name: "5g", price: 250 }, { name: "10g", price: 450 }]
-  }
-];
+let PRODUCTS = [];
 
 const state = {
   category: "Tous",
@@ -1593,11 +1641,12 @@ function renderProducts(){
 
   filtered.forEach(p=>{
     const firstPrice = p.options && p.options.length > 0 ? p.options[0].price : 0;
-    const isVideo = p.image && (p.image.toLowerCase().endsWith('.mp4') || p.image.toLowerCase().includes('.mov') || p.image.startsWith('data:video'));
+    const imgUrl = p.image || "https://raw.githubusercontent.com/skdesignshop/photo-image-/refs/heads/main/IMG_9326.jpeg";
+    const isVideo = imgUrl.toLowerCase().endsWith('.mp4') || imgUrl.toLowerCase().includes('.mov') || imgUrl.includes('alt=media&token=') && imgUrl.includes('%2Fvideo');
 
     const mediaHTML = isVideo 
-      ? `<video class="product-image" src="${p.image}" autoplay loop muted playsinline></video>`
-      : `<img class="product-image" src="${p.image}" alt="${p.name}" loading="lazy">`;
+      ? `<video class="product-image" src="${imgUrl}" autoplay loop muted playsinline></video>`
+      : `<img class="product-image" src="${imgUrl}" alt="${p.name}" loading="lazy">`;
 
     const card = document.createElement("div");
     card.className = "product-card";
@@ -1636,13 +1685,14 @@ function openProduct(p){
   state.selectedProduct = p;
   state.selectedOption = 0;
 
-  const isVideo = p.image && (p.image.toLowerCase().endsWith('.mp4') || p.image.toLowerCase().includes('.mov') || p.image.startsWith('data:video'));
+  const imgUrl = p.image || "https://raw.githubusercontent.com/skdesignshop/photo-image-/refs/heads/main/IMG_9326.jpeg";
+  const isVideo = imgUrl.toLowerCase().endsWith('.mp4') || imgUrl.toLowerCase().includes('.mov') || imgUrl.includes('alt=media&token=') && imgUrl.includes('%2Fvideo');
   const mediaContainer = document.getElementById("detailMediaContainer");
   
   if(isVideo){
-    mediaContainer.innerHTML = `<video class="product-detail-media" src="${p.image}" autoplay loop muted playsinline controls></video>`;
+    mediaContainer.innerHTML = `<video class="product-detail-media" src="${imgUrl}" autoplay loop muted playsinline controls></video>`;
   } else {
-    mediaContainer.innerHTML = `<img id="detailImage" class="product-detail-media" src="${p.image}" alt="Produit">`;
+    mediaContainer.innerHTML = `<img id="detailImage" class="product-detail-media" src="${imgUrl}" alt="Produit">`;
   }
 
   document.getElementById("detailTitle").textContent = p.name;
@@ -1741,11 +1791,13 @@ function updateCartUI(){
   items.forEach(item=>{
     total += item.price * item.quantity;
     count += item.quantity;
-
-    const isVideo = item.image && (item.image.toLowerCase().endsWith('.mp4') || item.image.toLowerCase().includes('.mov') || item.image.startsWith('data:video'));
+    
+    const imgUrl = item.image || "https://raw.githubusercontent.com/skdesignshop/photo-image-/refs/heads/main/IMG_9326.jpeg";
+    const isVideo = imgUrl.toLowerCase().endsWith('.mp4') || imgUrl.toLowerCase().includes('.mov') || imgUrl.includes('alt=media&token=') && imgUrl.includes('%2Fvideo');
+    
     const thumbHTML = isVideo 
-      ? `<video src="${item.image}" autoplay loop muted playsinline></video>` 
-      : `<img src="${item.image}" alt="${item.name}">`;
+      ? `<video src="${imgUrl}" autoplay loop muted playsinline></video>` 
+      : `<img src="${imgUrl}" alt="${item.name}">`;
 
     const el = document.createElement("div");
     el.className = "cart-item";
@@ -1919,35 +1971,67 @@ document.querySelectorAll(".nav-btn").forEach(btn=>{
   };
 });
 
+// LOGIQUE CLAVIER PIN
 const pinOverlay = document.getElementById("pinOverlay");
 const pinSheet = document.getElementById("pinSheet");
 const adminOverlay = document.getElementById("adminOverlay");
 const adminSheet = document.getElementById("adminSheet");
+const pinDots = document.querySelectorAll(".pin-dot");
+let currentPin = "";
+const VALID_PIN = "2468"; // CHANGE TON CODE ICI
 
 document.getElementById("adminDirectBtn").onclick = () => {
+  currentPin = "";
+  updatePinDisplay();
   pinOverlay.classList.add("open");
   pinSheet.classList.add("open");
 };
 
-document.getElementById("closePin").onclick = () => { pinOverlay.classList.remove("open"); pinSheet.classList.remove("open"); };
-pinOverlay.onclick = () => { pinOverlay.classList.remove("open"); pinSheet.classList.remove("open"); };
+function updatePinDisplay() {
+  pinDots.forEach((dot, index) => {
+    if(index < currentPin.length) dot.classList.add("filled");
+    else dot.classList.remove("filled");
+  });
+}
 
-document.getElementById("submitPin").onclick = () => {
-  const pin = document.getElementById("adminPinInput").value.trim();
-  
-  if(pin === "2468"){
+function checkPin() {
+  if (currentPin === VALID_PIN) {
     pinOverlay.classList.remove("open");
     pinSheet.classList.remove("open");
-    document.getElementById("adminPinInput").value = "";
     adminOverlay.classList.add("open");
     adminSheet.classList.add("open");
     renderAdminProductList();
     showToast("Accès admin autorisé ✓");
   } else {
-    showToast("Code PIN incorrect ❌");
+    document.getElementById("pinDisplay").classList.add("shake");
+    setTimeout(() => {
+      document.getElementById("pinDisplay").classList.remove("shake");
+      currentPin = "";
+      updatePinDisplay();
+    }, 400);
   }
-};
+}
 
+document.querySelectorAll(".pin-btn").forEach(btn => {
+  btn.onclick = () => {
+    if(btn.id === "pinClear") {
+      currentPin = "";
+      updatePinDisplay();
+    } else if(btn.id === "pinDel") {
+      currentPin = currentPin.slice(0, -1);
+      updatePinDisplay();
+    } else if(btn.dataset.val && currentPin.length < 4) {
+      currentPin += btn.dataset.val;
+      updatePinDisplay();
+      if(currentPin.length === 4) {
+        setTimeout(checkPin, 100);
+      }
+    }
+  }
+});
+
+document.getElementById("closePin").onclick = () => { pinOverlay.classList.remove("open"); pinSheet.classList.remove("open"); };
+pinOverlay.onclick = () => { pinOverlay.classList.remove("open"); pinSheet.classList.remove("open"); };
 document.getElementById("closeAdmin").onclick = () => { adminOverlay.classList.remove("open"); adminSheet.classList.remove("open"); };
 adminOverlay.onclick = () => { adminOverlay.classList.remove("open"); adminSheet.classList.remove("open"); };
 
@@ -1967,9 +2051,11 @@ function resetAdminForm(){
   document.getElementById("adminName").value = "";
   document.getElementById("adminCategory").value = "";
   document.getElementById("adminDesc").value = "";
+  document.getElementById("adminMediaLink").value = "";
   document.getElementById("adminMediaFile").value = "";
   document.getElementById("adminOptions").value = "5g:50, 25g:200";
   document.getElementById("adminFormTitle").textContent = "Ajouter un produit";
+  document.getElementById("saveProductBtn").textContent = "Enregistrer";
 }
 
 function renderAdminProductList(){
@@ -1977,11 +2063,14 @@ function renderAdminProductList(){
   container.innerHTML = "";
   
   PRODUCTS.forEach(p => {
+    const imgUrl = p.image || "https://raw.githubusercontent.com/skdesignshop/photo-image-/refs/heads/main/IMG_9326.jpeg";
+    const isVideo = imgUrl.toLowerCase().endsWith('.mp4') || imgUrl.toLowerCase().includes('.mov') || imgUrl.includes('alt=media&token=') && imgUrl.includes('%2Fvideo');
+
     const row = document.createElement("div");
     row.className = "admin-product-row";
     row.innerHTML = `
       <div class="admin-product-info">
-        <img class="admin-product-thumb" src="${p.image}">
+        ${isVideo ? `<video class="admin-product-thumb" src="${imgUrl}" muted></video>` : `<img class="admin-product-thumb" src="${imgUrl}">`}
         <div style="min-width:0; overflow:hidden;">
           <div style="font-size:12px; font-weight:800; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${p.name}</div>
           <div style="font-size:10px; color:var(--muted);">${p.category}</div>
@@ -1998,6 +2087,7 @@ function renderAdminProductList(){
       document.getElementById("adminName").value = p.name;
       document.getElementById("adminCategory").value = p.category;
       document.getElementById("adminDesc").value = p.description;
+      document.getElementById("adminMediaLink").value = p.image || "";
       document.getElementById("adminFormTitle").textContent = "Modifier le produit";
       document.getElementById("adminSectionForm").style.display = "block";
       document.getElementById("adminSectionList").style.display = "none";
@@ -2014,11 +2104,14 @@ function renderAdminProductList(){
 }
 
 document.getElementById("saveProductBtn").onclick = async () => {
+  const btn = document.getElementById("saveProductBtn");
   const id = document.getElementById("editProductId").value;
   const name = document.getElementById("adminName").value.trim();
   const category = document.getElementById("adminCategory").value.trim();
   const description = document.getElementById("adminDesc").value.trim();
   const optionsRaw = document.getElementById("adminOptions").value.trim();
+  
+  const mediaLinkInput = document.getElementById("adminMediaLink").value.trim();
   const fileInput = document.getElementById("adminMediaFile");
 
   if(!name || !category){
@@ -2036,41 +2129,52 @@ document.getElementById("saveProductBtn").onclick = async () => {
     return;
   }
 
-  let imageUrl = "";
+  let finalImageUrl = "";
   const existing = id ? PRODUCTS.find(p => p.id === id) : null;
-  if(existing) imageUrl = existing.image;
+  if(existing) finalImageUrl = existing.image;
 
-  if(fileInput.files && fileInput.files[0]){
+  // Si un lien direct est fourni, il est prioritaire
+  if(mediaLinkInput !== "") {
+    finalImageUrl = mediaLinkInput;
+  } 
+  // Sinon, s'il y a un fichier envoyé depuis la galerie
+  else if(fileInput.files && fileInput.files[0]) {
     const file = fileInput.files[0];
     
-    if(file.size > 900000) {
-      showToast("Vidéo trop lourde ! Coupe-la (< 1 Mo).");
+    if(storage) {
+      btn.textContent = "Upload en cours... ⏳";
+      btn.disabled = true;
+      try {
+        const fileRef = storage.ref('products/' + Date.now() + '_' + file.name);
+        await fileRef.put(file);
+        finalImageUrl = await fileRef.getDownloadURL();
+      } catch (err) {
+        showToast("Erreur lors de l'upload du média ❌");
+        btn.textContent = "Enregistrer";
+        btn.disabled = false;
+        return;
+      }
+    } else {
+      showToast("Erreur : Storage Firebase non configuré.");
       return;
     }
-
-    const reader = new FileReader();
-    reader.onload = async function(uploadEvent) {
-      imageUrl = uploadEvent.target.result;
-      const productData = { name, category, description, image: imageUrl, options };
-      await saveProductToFirebase(productData, id ? id : null);
-      document.getElementById("adminSectionForm").style.display = "none";
-      document.getElementById("adminSectionList").style.display = "block";
-      renderAdminProductList();
-    };
-    reader.readAsDataURL(file);
-  } else {
-    const productData = { 
-      name, 
-      category, 
-      description, 
-      image: imageUrl || "https://raw.githubusercontent.com/skdesignshop/photo-image-/refs/heads/main/IMG_9326.jpeg", 
-      options 
-    };
-    await saveProductToFirebase(productData, id ? id : null);
-    document.getElementById("adminSectionForm").style.display = "none";
-    document.getElementById("adminSectionList").style.display = "block";
-    renderAdminProductList();
   }
+
+  // Enregistrement Firestore
+  const productData = { 
+    name, 
+    category, 
+    description, 
+    image: finalImageUrl || "https://raw.githubusercontent.com/skdesignshop/photo-image-/refs/heads/main/IMG_9326.jpeg", 
+    options 
+  };
+  
+  await saveProductToFirebase(productData, id ? id : null);
+  btn.textContent = "Enregistrer";
+  btn.disabled = false;
+  document.getElementById("adminSectionForm").style.display = "none";
+  document.getElementById("adminSectionList").style.display = "block";
+  renderAdminProductList();
 };
 
 const userTg = tg && tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user : null;
@@ -2078,6 +2182,11 @@ if(userTg){
   document.getElementById("profileName").textContent = userTg.first_name + (userTg.last_name ? " " + userTg.last_name : "");
   document.getElementById("profileUsername").textContent = userTg.username ? "@"+userTg.username : "Non défini";
   document.getElementById("profileId").textContent = userTg.id || "Inconnu";
+  
+  // Si l'API renvoie une photo (souvent le cas pour les utilisateurs premium ou selon la vie privée)
+  if(userTg.photo_url) {
+    document.getElementById("userAvatar").src = userTg.photo_url;
+  }
 }
 
 loadProductsFromFirebase();
